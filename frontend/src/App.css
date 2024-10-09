@@ -106,3 +106,58 @@ textarea:focus {
     padding-bottom: 2px;
 }
 
+.reg_block {
+    background-color: #242526;
+    width: 100%;
+    padding: 40px 35px 40px 35px;
+    gap: 20px;
+    border-radius: 20px;
+    display: flex;
+    flex-direction: column;
+}
+
+.container {
+    height: 100vh;
+    width: 25%;
+    margin-left: auto;
+    margin-right: auto;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.name_input {
+    display: flex;
+    flex-direction: column;
+    gap: 25px;
+}
+
+.name_input input{
+    border-radius: 15px;
+    background-color: #18191A;
+    border: none;
+    height: 5px;
+    padding: 30px 22px 30px 22px;
+    color: white;
+    font-size: 18px;
+}
+
+.sign_in_btn {
+    background-color: #6297FF;
+    color: white;
+    display: flex;
+    width: 100%;
+    border-radius: 15px;
+    height: 50px;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+}
+
+.name_input input:focus {
+    outline: none;
+}
+
+.unvisib {
+    display: none;
+}
