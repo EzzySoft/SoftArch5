@@ -26,7 +26,7 @@ def register():
             "Message": "Username and password are required"
         }), 400
     password = hashpw(password.encode('utf-8'), gensalt())
-    user = User(user=username, password=password.decode('utf-8'))
+    user = User(username=username, password=password.decode('utf-8'))
     db.session.add(user)
     db.session.commit()
 
