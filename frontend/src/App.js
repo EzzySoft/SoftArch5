@@ -39,7 +39,7 @@ function App() {
           ))}
         </div>
         <div className="down_panel">
-          <textarea placeholder="Your message"></textarea>
+          <textarea placeholder="Your message" maxLength={400}></textarea>
           <button className="enter">
             <img src={send} alt="Send" />
           </button>
