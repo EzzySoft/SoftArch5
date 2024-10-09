@@ -1,28 +1,28 @@
 Sure! Here is the API documentation in English:
  
-\### API Documentation
+### API Documentation
  
-\#### Base URL
+#### Base URL
  
 All API endpoints are available at the following base URL:
  
-\`\`\`
+```
  
 [http://localhost:5001](http://localhost:5001) 
  
-\`\`\`
+```
  
-\#### Services
+#### Services
  
-1\. **User Service** (port 5001)
+1. **User Service** (port 5001)
  
-2\. **Message Service** (port 5003)
+2. **Message Service** (port 5003)
  
-3\. **Feed Service** (port 5002)
+3. **Feed Service** (port 5002)
  
-\### User Service (port 5001)
+### User Service (port 5001)
  
-\#### Register a User
+#### Register a User
  
 **POST** `/register`
  
@@ -30,7 +30,7 @@ All API endpoints are available at the following base URL:
  
 **Request Body**:
  
-\`\`\`json
+```json
  
 {
  
@@ -40,13 +40,13 @@ All API endpoints are available at the following base URL:
  
 }
  
-\`\`\`
+```
  
 **Response**:
  
-\- **201 Created**:
+- **201 Created**:
  
-\`\`\`json
+```json
  
 {
  
@@ -54,11 +54,11 @@ All API endpoints are available at the following base URL:
  
 }
  
-\`\`\`
+```
  
-\- **400 Bad Request**:
+- **400 Bad Request**:
  
-\`\`\`json
+```json
  
 {
  
@@ -66,9 +66,9 @@ All API endpoints are available at the following base URL:
  
 }
  
-\`\`\`
+```
  
-\#### User Login
+#### User Login
  
 **POST** `/login`
  
@@ -76,7 +76,7 @@ All API endpoints are available at the following base URL:
  
 **Request Body**:
  
-\`\`\`json
+```json
  
 {
  
@@ -86,13 +86,13 @@ All API endpoints are available at the following base URL:
  
 }
  
-\`\`\`
+```
  
 **Response**:
  
-\- **200 OK**:
+- **200 OK**:
  
-\`\`\`json
+```json
  
 {
  
@@ -100,11 +100,11 @@ All API endpoints are available at the following base URL:
  
 }
  
-\`\`\`
+```
  
-\- **401 Unauthorized**:
+- **401 Unauthorized**:
  
-\`\`\`json
+```json
  
 {
  
@@ -112,11 +112,11 @@ All API endpoints are available at the following base URL:
  
 }
  
-\`\`\`
+```
  
 or
  
-\`\`\`json
+```json
  
 {
  
@@ -124,11 +124,11 @@ or
  
 }
  
-\`\`\`
+```
  
-\### Message Service (port 5003)
+### Message Service (port 5003)
  
-\#### Create a Message
+#### Create a Message
  
 **POST** `/message`
  
@@ -136,7 +136,7 @@ or
  
 **Request Body**:
  
-\`\`\`json
+```json
  
 {
  
@@ -146,13 +146,13 @@ or
  
 }
  
-\`\`\`
+```
  
 **Response**:
  
-\- **201 Created**:
+- **201 Created**:
  
-\`\`\`json
+```json
  
 {
  
@@ -160,11 +160,11 @@ or
  
 }
  
-\`\`\`
+```
  
-\- **400 Bad Request**:
+- **400 Bad Request**:
  
-\`\`\`json
+```json
  
 {
  
@@ -172,9 +172,9 @@ or
  
 }
  
-\`\`\`
+```
  
-\#### Delete a Message
+#### Delete a Message
  
 **DELETE** `/message/<int:message_id>`
  
@@ -182,13 +182,13 @@ or
  
 **Parameters**:
  
-\- `message_id`: The ID of the message to delete.
+- `message_id`: The ID of the message to delete.
  
 **Response**:
  
-\- **200 OK**:
+- **200 OK**:
  
-\`\`\`json
+```json
  
 {
  
@@ -196,11 +196,11 @@ or
  
 }
  
-\`\`\`
+```
  
-\- **404 Not Found**:
+- **404 Not Found**:
  
-\`\`\`json
+```json
  
 {
  
@@ -208,11 +208,11 @@ or
  
 }
  
-\`\`\`
+```
  
-\### Feed Service (port 5002)
+### Feed Service (port 5002)
  
-\#### Get Feed
+#### Get Feed
  
 **GET** `/feed`
  
@@ -220,11 +220,11 @@ or
  
 **Response**:
  
-\- **200 OK**:
+- **200 OK**:
  
-\`\`\`json
+```json
  
-\[
+[
  
 {
  
@@ -246,10 +246,10 @@ or
  
 }
  
-\]
+]
  
-\`\`\`
+```
  
-\### Conclusion
+### Conclusion
  
 This documentation describes all available endpoints and their functionality for your API. Ensure that each service is running on the corresponding port, and use this documentation to interact with the API.
