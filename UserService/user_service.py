@@ -12,27 +12,24 @@ jwt = JWTManager(app)
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(256), unique=True, nullable=False)
-    password = db.Column(db.String(512), nullable=False)
 
 
 @app.route('/register', methods=['POST'])
 def register():
     data = request.json
     username = data.get('username')
-    password = data.get('password')
 
     if User.query.filter_by(username=username).first():
         return jsonify({
             "Message": "User already exists"
         }), 400
 
-    if not username or not password:
+    if not username:
         return jsonify({
             "Message": "Username and password are required"
         }), 400
 
-    password = hashpw(password.encode('utf-8'), gensalt())
-    user = User(username=username, password=password.decode('utf-8'))
+    user = User(username=username)
     db.session.add(user)
     db.session.commit()
 
@@ -45,9 +42,8 @@ def register():
 def login():
     data = request.json
     username = data.get('username')
-    password = data.get('password')
 
-    if not username or not password:
+    if not username:
         return jsonify({
             "Message": "Username and password are required"
         }), 400
@@ -56,11 +52,6 @@ def login():
     if not user:
         return jsonify({
             "Message": "User does not exist, please register"
-        }), 401
-
-    if not checkpw(password.encode('utf-8'), user.password.encode('utf-8')):
-        return jsonify({
-            "Message": "Passwords don't match. Please try again"
         }), 401
 
     access_token = create_access_token(identity=user.id)
