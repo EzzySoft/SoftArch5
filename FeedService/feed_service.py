@@ -15,9 +15,9 @@ class User(db.Model):
 
 class Message(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    user_id = db.Column(db.Integer, unique=True, nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     content = db.Column(db.String(400), nullable=False)
-    user_name = db.relationship('User', backref='messages')
+    username = db.relationship('User', backref='messages')
     date = db.Column(db.DateTime, default=datetime.datetime)
 
 
@@ -28,7 +28,7 @@ def get_feed():
     return jsonify(
         [
             {
-                'User': msg.user_name,
+                'User': msg.user.username,
                 'Content': msg.content,
                 'Date': msg.date,
             }
