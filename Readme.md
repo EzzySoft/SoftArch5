@@ -10,10 +10,6 @@ A microservices-based application that has a registration by username and allow 
 - User can react on message.
 - Separate services for users, messages, and likes.
 
-## Installation
-
-
-
 ## Usage
 Start the services:
 * User Service:
