@@ -1,6 +1,5 @@
 from flask import Flask, request, jsonify
 from flask_sqlalchemy import SQLAlchemy
-from bcrypt import hashpw, gensalt, checkpw
 from flask_jwt_extended import JWTManager, jwt_required, create_access_token, get_jwt_identity
 
 app = Flask(__name__)
