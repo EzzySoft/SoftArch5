@@ -1,9 +1,11 @@
 from flask import Flask, request, jsonify
 from flask_sqlalchemy import SQLAlchemy
 from flask_jwt_extended import JWTManager, jwt_required, create_access_token, get_jwt_identity
+import secrets
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://kmmrwsgr:UMg6sKjYUG3nhI6D3fTjSU3vMpjGjYCI@abul.db.elephantsql.com/kmmrwsgr'
+app.config['JWT_SECRET_KEY'] = secrets.token_urlsafe(32)
 db = SQLAlchemy(app)
 jwt = JWTManager(app)
 
@@ -25,7 +27,7 @@ def register():
 
     if not username:
         return jsonify({
-            "Message": "Username and password are required"
+            "Message": "Username is required"
         }), 400
 
     user = User(username=username)
@@ -44,7 +46,7 @@ def login():
 
     if not username:
         return jsonify({
-            "Message": "Username and password are required"
+            "Message": "Username is required"
         }), 400
 
     user = User.query.filter_by(username=username).first()
