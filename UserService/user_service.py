@@ -5,7 +5,7 @@ import secrets
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://kmmrwsgr:UMg6sKjYUG3nhI6D3fTjSU3vMpjGjYCI@abul.db.elephantsql.com/kmmrwsgr'
-app.config['JWT_SECRET_KEY'] = secrets.token_urlsafe(32)
+app.config['JWT_SECRET_KEY'] = "717ac506950da0ccb6404cdd5e7591f72018a20cbca27c8a423e9c9e5626ac61"
 db = SQLAlchemy(app)
 jwt = JWTManager(app)
 
