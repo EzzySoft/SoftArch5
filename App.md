@@ -1,5 +1,3 @@
-Sure! Here is the API documentation in English:
- 
 ### API Documentation
  
 #### Base URL
