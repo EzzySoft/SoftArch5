@@ -1,0 +1,38 @@
+version: '3.8'
+
+services:
+  message_service:
+    build:
+      context: ./Message
+      dockerfile: Dockerfile
+    ports:
+      - "5003:5003"
+    environment:
+      - SQLALCHEMY_DATABASE_URI=postgresql://kmmrwsgr:UMg6sKjYUG3nhI6D3fTjSU3vMpjGjYCI@abul.db.elephantsql.com/kmmrwsgr
+
+  like_service:
+    build:
+      context: ./LikeService
+      dockerfile: Dockerfile
+    ports:
+      - "5002:5002"
+    environment:
+      - SQLALCHEMY_DATABASE_URI=postgresql://kmmrwsgr:UMg6sKjYUG3nhI6D3fTjSU3vMpjGjYCI@abul.db.elephantsql.com/kmmrwsgr
+
+  user_service:
+    build:
+      context: ./UserService
+      dockerfile: Dockerfile
+    ports:
+      - "5001:5001"
+    environment:
+      - SQLALCHEMY_DATABASE_URI=postgresql://kmmrwsgr:UMg6sKjYUG3nhI6D3fTjSU3vMpjGjYCI@abul.db.elephantsql.com/kmmrwsgr
+
+  feed_service:
+    build:
+      context: ./FeedService
+      dockerfile: Dockerfile
+    ports:
+      - "5004:5004"
+    environment:
+      - SQLALCHEMY_DATABASE_URI=postgresql://kmmrwsgr:UMg6sKjYUG3nhI6D3fTjSU3vMpjGjYCI@abul.db.elephantsql.com/kmmrwsgr
