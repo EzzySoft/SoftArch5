@@ -26,5 +26,5 @@ Start the services:
     python feed_service.py
 
 ## Notes
-* Ensure you have PostgreSQL running and the necessary environment variables set for database configuration.
-* The JWT secret key should be kept secure and not shared publicly.
+* Make your PostgreSQL database running and with all set up configs. 
+* Also JWT secret key should be in saved in secure manner
