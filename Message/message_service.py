@@ -84,4 +84,4 @@ if __name__ == '__main__':
     logging.basicConfig(level=logging.DEBUG)
     with app.app_context():
         db.create_all()
-    app.run(port=5003, debug=True)
+    app.run(host = '0.0.0.0', port=5003, debug=True)

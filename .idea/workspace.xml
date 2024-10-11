@@ -5,9 +5,10 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="9bf56bc6-b631-4e32-b691-ab0ef5c342eb" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/App.md" beforeDir="false" afterPath="$PROJECT_DIR$/App.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/docker-compose.yml" beforeDir="false" afterPath="$PROJECT_DIR$/docker-compose.yml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/FeedService/feed_service.py" beforeDir="false" afterPath="$PROJECT_DIR$/FeedService/feed_service.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/LikeService/like_service.py" beforeDir="false" afterPath="$PROJECT_DIR$/LikeService/like_service.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Message/message_service.py" beforeDir="false" afterPath="$PROJECT_DIR$/Message/message_service.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/UserService/user_service.py" beforeDir="false" afterPath="$PROJECT_DIR$/UserService/user_service.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
