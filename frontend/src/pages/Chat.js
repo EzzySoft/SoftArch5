@@ -15,6 +15,23 @@ function Chat() {
         const user_id = localStorage.getItem('user_id');
 
         try {
+            // Сначала получаем лайки пользователя
+            const likesResponse = await fetch(`http://127.0.0.1:5002/likes/user/${user_id}`, {
+                method: 'GET',
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            });
+
+            let userLikesSet = new Set();
+            if (likesResponse.ok) {
+                const likesData = await likesResponse.json();
+                userLikesSet = new Set(likesData.liked_message_ids);
+                setUserLikes(userLikesSet); // Сохраняем лайки пользователя
+                console.log(likesData);
+            }
+
+            // Затем получаем сообщения
             const response = await fetch('http://127.0.0.1:5004/feed', {
                 method: 'GET',
                 headers: {
@@ -29,26 +46,10 @@ function Chat() {
 
             const data = await response.json();
 
-            // Получение лайков пользователя
-            const likesResponse = await fetch(`http://127.0.0.1:5002/likes/user/${user_id}`, {
-                method: 'GET',
-                headers: {
-                    'Authorization': `Bearer ${token}`
-                }
-            });
-
-            if (likesResponse.ok) {
-                const likesData = await likesResponse.json();
-                setUserLikes(new Set(likesData.liked_message_ids)); // Сохраняем лайки пользователя в виде Set для быстрого доступа
-                console.log(likesData)
-            }
-
-
-
-            // Обновляем сообщения с лайками
+            // Обновляем сообщения с учетом лайков
             const updatedMessages = data.map(message => ({
                 ...message,
-                liked: userLikes.has(message.id), // Определяем, лайкнуто ли сообщение
+                liked: userLikesSet.has(message.id), // Определяем, лайкнуто ли сообщение
             }));
 
             setMessages(updatedMessages);
@@ -58,6 +59,7 @@ function Chat() {
             setLoading(false);
         }
     };
+
 
 
     useEffect(() => {
