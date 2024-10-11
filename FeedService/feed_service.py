@@ -24,7 +24,6 @@ def get_feed():
     try:
         current_user_id = get_jwt_identity()
 
-        # Получаем токен авторизации из заголовка запроса
         auth_header = request.headers.get('Authorization')
         if not auth_header or not auth_header.startswith('Bearer '):
             return jsonify({
@@ -33,7 +32,6 @@ def get_feed():
 
         token = auth_header.split(' ')[1]
 
-        # Добавляем токен в заголовок запроса к message_service
         headers = {
             'Authorization': f'Bearer {token}'
         }
