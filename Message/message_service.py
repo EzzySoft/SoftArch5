@@ -1,6 +1,7 @@
 from flask import Flask, request, jsonify
 from flask_sqlalchemy import SQLAlchemy
 from flask_jwt_extended import JWTManager, jwt_required, create_access_token, get_jwt_identity
+from flask_cors import CORS
 import datetime
 import logging
 
@@ -11,11 +12,17 @@ db = SQLAlchemy(app)
 jwt = JWTManager(app)
 
 
+class User(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    username = db.Column(db.String(256), unique=True, nullable=False)
+
+
 class Message(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, nullable=False)
     content = db.Column(db.String(400), nullable=False)
     date = db.Column(db.DateTime, default=datetime.datetime.utcnow)
+    likes = db.Column(db.Integer, default=0)
 
 
 @app.route('/message', methods=['POST'])
@@ -53,6 +60,24 @@ def delete_message(message_id):
     return jsonify({
         "Message": "Message is deleted successfully"
     }), 200
+
+
+@app.route('/messages', methods=['GET'])
+@jwt_required()
+def get_all_messages():
+        messages = Message.query.all()
+        message_list = []
+
+        for msg in messages:
+            message_list.append({
+                'id': msg.id,
+                'username': User.query.get(msg.user_id).username,
+                'content': msg.content,
+                'date': msg.date.isoformat(),
+                'likes': msg.likes
+            })
+
+        return jsonify(message_list), 200
 
 
 if __name__ == '__main__':
