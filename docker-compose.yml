@@ -2,28 +2,42 @@ version: '3.8'
 
 services:
   db:
-    build:
-      context: .
-      dockerfile: Dockerfile
+    image: postgres:13
     container_name: postgres_db
     ports:
       - "5432:5432"
+    environment:
+      - POSTGRES_DB=softarch5
+      - POSTGRES_USER=myuser
+      - POSTGRES_PASSWORD=mypassword
     volumes:
       - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+          test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d $${POSTGRES_DB}"]
+          interval: 10s
+          retries: 5
+          start_period: 30s
+          timeout: 10s
 
-  like_service:
-    build: ./like_service
-    container_name: like_service
+  user_service:
+    build:
+      context: ./UserService
+      dockerfile: Dockerfile
+    container_name: user_service
     ports:
-      - "5002:5002"
+      - "5001:5001"
     environment:
       - SQLALCHEMY_DATABASE_URI=postgresql://myuser:mypassword@db:5432/softarch5
       - JWT_SECRET_KEY=717ac506950da0ccb6404cdd5e7591f72018a20cbca27c8a423e9c9e5626ac61
     depends_on:
-      - db
+      db:
+              condition: service_healthy
+              restart: true
 
   message_service:
-    build: ./message_service
+    build:
+      context: ./Message
+      dockerfile: Dockerfile
     container_name: message_service
     ports:
       - "5003:5003"
@@ -31,10 +45,29 @@ services:
       - SQLALCHEMY_DATABASE_URI=postgresql://myuser:mypassword@db:5432/softarch5
       - JWT_SECRET_KEY=717ac506950da0ccb6404cdd5e7591f72018a20cbca27c8a423e9c9e5626ac61
     depends_on:
-      - db
+      db:
+              condition: service_healthy
+              restart: true
+
+  like_service:
+    build:
+      context: ./LikeService
+      dockerfile: Dockerfile
+    container_name: like_service
+    ports:
+      - "5002:5002"
+    environment:
+      - SQLALCHEMY_DATABASE_URI=postgresql://myuser:mypassword@db:5432/softarch5
+      - JWT_SECRET_KEY=717ac506950da0ccb6404cdd5e7591f72018a20cbca27c8a423e9c9e5626ac61
+    depends_on:
+      db:
+              condition: service_healthy
+              restart: true
 
   feed_service:
-    build: ./feed_service
+    build:
+      context: ./FeedService
+      dockerfile: Dockerfile
     container_name: feed_service
     ports:
       - "5004:5004"
@@ -42,9 +75,9 @@ services:
       - SQLALCHEMY_DATABASE_URI=postgresql://myuser:mypassword@db:5432/softarch5
       - JWT_SECRET_KEY=717ac506950da0ccb6404cdd5e7591f72018a20cbca27c8a423e9c9e5626ac61
     depends_on:
-      - db
       - like_service
       - message_service
+      - db
 
 volumes:
   postgres_data:
