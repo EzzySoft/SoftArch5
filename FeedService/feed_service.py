@@ -7,7 +7,7 @@ import logging
 
 app = Flask(__name__)
 app.config[
-    'SQLALCHEMY_DATABASE_URI'] = 'postgresql://kmmrwsgr:UMg6sKjYUG3nhI6D3fTjSU3vMpjGjYCI@abul.db.elephantsql.com/kmmrwsgr'
+    'SQLALCHEMY_DATABASE_URI'] = 'postgresql://myuser:mypassword@localhost:5432/softarch5'
 app.config['JWT_SECRET_KEY'] = "717ac506950da0ccb6404cdd5e7591f72018a20cbca27c8a423e9c9e5626ac61"
 app.config['SQLALCHEMY_POOL_SIZE'] = 10
 app.config['SQLALCHEMY_MAX_OVERFLOW'] = 5
@@ -15,14 +15,32 @@ db = SQLAlchemy(app)
 jwt = JWTManager(app)
 CORS(app, resources={r"/*": {"origins": "http://localhost:3000"}})
 
+logging.basicConfig(level=logging.DEBUG)
+
+
 @app.route('/feed', methods=['GET'])
 @jwt_required()
 def get_feed():
     try:
         current_user_id = get_jwt_identity()
 
-        response = requests.get('http://localhost:5003/messages')
+        # Получаем токен авторизации из заголовка запроса
+        auth_header = request.headers.get('Authorization')
+        if not auth_header or not auth_header.startswith('Bearer '):
+            return jsonify({
+                "Message": "Authorization token is missing or invalid"
+            }), 401
+
+        token = auth_header.split(' ')[1]
+
+        # Добавляем токен в заголовок запроса к message_service
+        headers = {
+            'Authorization': f'Bearer {token}'
+        }
+
+        response = requests.get('http://localhost:5003/messages', headers=headers)
         if response.status_code != 200:
+            logging.error(f"Failed to fetch messages from message_service: {response.status_code} {response.text}")
             return jsonify({
                 "Message": "Failed to fetch messages from message_service"
             }), 500
@@ -32,6 +50,7 @@ def get_feed():
 
         response = requests.get(f'http://localhost:5002/likes/user/{current_user_id}')
         if response.status_code != 200:
+            logging.error(f"Failed to fetch user likes from like_service: {response.status_code} {response.text}")
             return jsonify({
                 "Message": "Failed to fetch user likes from like_service"
             }), 500
@@ -41,6 +60,7 @@ def get_feed():
         for msg in messages:
             response = requests.get(f'http://localhost:5002/likes/{msg["id"]}')
             if response.status_code != 200:
+                logging.error(f"Failed to fetch likes for message from like_service: {response.status_code} {response.text}")
                 return jsonify({
                     "Message": "Failed to fetch likes for message from like_service"
                 }), 500
@@ -78,6 +98,7 @@ def like():
 
         response = requests.post(f'http://localhost:5002/like', json={'message_id': message_id})
         if response.status_code != 201:
+            logging.error(f"Failed to add like: {response.status_code} {response.text}")
             return jsonify({
                 "Message": "Failed to add like"
             }), 500
@@ -106,6 +127,7 @@ def unlike():
 
         response = requests.post(f'http://localhost:5002/dislike', json={'message_id': message_id})
         if response.status_code != 200:
+            logging.error(f"Failed to remove like: {response.status_code} {response.text}")
             return jsonify({
                 "Message": "Failed to remove like"
             }), 500
@@ -121,7 +143,6 @@ def unlike():
 
 
 if __name__ == '__main__':
-    logging.basicConfig(level=logging.DEBUG)
     with app.app_context():
         db.create_all()
     app.run(port=5004, debug=True)

@@ -1,38 +1,50 @@
 version: '3.8'
 
 services:
-  message_service:
+  db:
     build:
-      context: ./Message
+      context: .
       dockerfile: Dockerfile
+    container_name: postgres_db
     ports:
-      - "5003:5003"
-    environment:
-      - SQLALCHEMY_DATABASE_URI=postgresql://kmmrwsgr:UMg6sKjYUG3nhI6D3fTjSU3vMpjGjYCI@abul.db.elephantsql.com/kmmrwsgr
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
 
   like_service:
-    build:
-      context: ./LikeService
-      dockerfile: Dockerfile
+    build: ./like_service
+    container_name: like_service
     ports:
       - "5002:5002"
     environment:
-      - SQLALCHEMY_DATABASE_URI=postgresql://kmmrwsgr:UMg6sKjYUG3nhI6D3fTjSU3vMpjGjYCI@abul.db.elephantsql.com/kmmrwsgr
+      - SQLALCHEMY_DATABASE_URI=postgresql://myuser:mypassword@db:5432/softarch5
+      - JWT_SECRET_KEY=717ac506950da0ccb6404cdd5e7591f72018a20cbca27c8a423e9c9e5626ac61
+    depends_on:
+      - db
 
-  user_service:
-    build:
-      context: ./UserService
-      dockerfile: Dockerfile
+  message_service:
+    build: ./message_service
+    container_name: message_service
     ports:
-      - "5001:5001"
+      - "5003:5003"
     environment:
-      - SQLALCHEMY_DATABASE_URI=postgresql://kmmrwsgr:UMg6sKjYUG3nhI6D3fTjSU3vMpjGjYCI@abul.db.elephantsql.com/kmmrwsgr
+      - SQLALCHEMY_DATABASE_URI=postgresql://myuser:mypassword@db:5432/softarch5
+      - JWT_SECRET_KEY=717ac506950da0ccb6404cdd5e7591f72018a20cbca27c8a423e9c9e5626ac61
+    depends_on:
+      - db
 
   feed_service:
-    build:
-      context: ./FeedService
-      dockerfile: Dockerfile
+    build: ./feed_service
+    container_name: feed_service
     ports:
       - "5004:5004"
     environment:
-      - SQLALCHEMY_DATABASE_URI=postgresql://kmmrwsgr:UMg6sKjYUG3nhI6D3fTjSU3vMpjGjYCI@abul.db.elephantsql.com/kmmrwsgr
+      - SQLALCHEMY_DATABASE_URI=postgresql://myuser:mypassword@db:5432/softarch5
+      - JWT_SECRET_KEY=717ac506950da0ccb6404cdd5e7591f72018a20cbca27c8a423e9c9e5626ac61
+    depends_on:
+      - db
+      - like_service
+      - message_service
+
+volumes:
+  postgres_data:
