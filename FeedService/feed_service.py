@@ -1,106 +1,127 @@
 from flask import Flask, request, jsonify
 from flask_sqlalchemy import SQLAlchemy
 from flask_jwt_extended import JWTManager, jwt_required, get_jwt_identity
+from flask_cors import CORS
 import requests
+import logging
 
 app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://kmmrwsgr:UMg6sKjYUG3nhI6D3fTjSU3vMpjGjYCI@abul.db.elephantsql.com/kmmrwsgr'
+app.config[
+    'SQLALCHEMY_DATABASE_URI'] = 'postgresql://kmmrwsgr:UMg6sKjYUG3nhI6D3fTjSU3vMpjGjYCI@abul.db.elephantsql.com/kmmrwsgr'
 app.config['JWT_SECRET_KEY'] = "717ac506950da0ccb6404cdd5e7591f72018a20cbca27c8a423e9c9e5626ac61"
+app.config['SQLALCHEMY_POOL_SIZE'] = 10
+app.config['SQLALCHEMY_MAX_OVERFLOW'] = 5
 db = SQLAlchemy(app)
 jwt = JWTManager(app)
-
-
-class User(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    username = db.Column(db.String(80), nullable=False)
-
-
-class Message(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
-    content = db.Column(db.String(400), nullable=False)
-    user = db.relationship('User', backref='messages')
-    likes = db.Column(db.Integer, default=0)
-
+CORS(app, resources={r"/*": {"origins": "http://localhost:3000"}})
 
 @app.route('/feed', methods=['GET'])
 @jwt_required()
 def get_feed():
-    current_user_id = get_jwt_identity()
-    messages = Message.query.order_by(Message.id.desc()).limit(10).all()
-    feed = []
+    try:
+        current_user_id = get_jwt_identity()
 
-    response = requests.get(f'http://localhost:5002/likes/user/{current_user_id}')
-    user_likes = response.json().get('liked_message_ids', [])
+        response = requests.get('http://localhost:5003/messages')
+        if response.status_code != 200:
+            return jsonify({
+                "Message": "Failed to fetch messages from message_service"
+            }), 500
 
-    for msg in messages:
-        response = requests.get(f'http://localhost:5002/likes/{msg.id}')
-        likes = response.json().get('likes', 0)
+        messages = response.json()
+        feed = []
 
-        feed.append({
-            'id': msg.id,
-            'User': msg.user.username,
-            'Content': msg.content,
-            'Date': msg.date,
-            'Likes': likes,
-            'LikedByCurrentUser': msg.id in user_likes
-        })
+        response = requests.get(f'http://localhost:5002/likes/user/{current_user_id}')
+        if response.status_code != 200:
+            return jsonify({
+                "Message": "Failed to fetch user likes from like_service"
+            }), 500
 
-    return jsonify(feed), 200
+        user_likes = response.json().get('liked_message_ids', [])
+
+        for msg in messages:
+            response = requests.get(f'http://localhost:5002/likes/{msg["id"]}')
+            if response.status_code != 200:
+                return jsonify({
+                    "Message": "Failed to fetch likes for message from like_service"
+                }), 500
+
+            likes = response.json().get('likes', 0)
+
+            feed.append({
+                'id': msg['id'],
+                'User': msg['username'],
+                'Content': msg['content'],
+                'Date': msg['date'],
+                'Likes': likes,
+                'LikedByCurrentUser': msg['id'] in user_likes
+            })
+        print("The work is done")
+        return jsonify(feed), 200
+    except Exception as e:
+        logging.error(f"Error during feed retrieval: {e}")
+        return jsonify({
+            "Message": "Internal Server Error"
+        }), 500
 
 
 @app.route('/like', methods=['POST'])
 @jwt_required()
 def like():
-    data = request.json
-    message_id = data.get('message_id')
+    try:
+        data = request.json
+        message_id = data.get('message_id')
 
-    if not message_id:
+        if not message_id:
+            return jsonify({
+                "Message": "Message ID is required"
+            }), 400
+
+        response = requests.post(f'http://localhost:5002/like', json={'message_id': message_id})
+        if response.status_code != 201:
+            return jsonify({
+                "Message": "Failed to add like"
+            }), 500
+
         return jsonify({
-            "Message": "Message ID is required"
-        }), 400
-
-    message = Message.query.get(message_id)
-    if not message:
+            "Message": "Like added successfully"
+        }), 201
+    except Exception as e:
+        logging.error(f"Error during like addition: {e}")
         return jsonify({
-            "Message": "Message not found"
-        }), 404
-
-    message.likes += 1
-    db.session.commit()
-
-    return jsonify({
-        "Message": "Like added successfully"
-    }), 201
+            "Message": "Internal Server Error"
+        }), 500
 
 
 @app.route('/unlike', methods=['POST'])
 @jwt_required()
 def unlike():
-    data = request.json
-    message_id = data.get('message_id')
+    try:
+        data = request.json
+        message_id = data.get('message_id')
 
-    if not message_id:
+        if not message_id:
+            return jsonify({
+                "Message": "Message ID is required"
+            }), 400
+
+        response = requests.post(f'http://localhost:5002/dislike', json={'message_id': message_id})
+        if response.status_code != 200:
+            return jsonify({
+                "Message": "Failed to remove like"
+            }), 500
+
         return jsonify({
-            "Message": "Message ID is required"
-        }), 400
-
-    message = Message.query.get(message_id)
-    if not message:
+            "Message": "Like removed successfully"
+        }), 200
+    except Exception as e:
+        logging.error(f"Error during like removal: {e}")
         return jsonify({
-            "Message": "Message not found"
-        }), 404
-
-    if message.likes > 0:
-        message.likes -= 1
-        db.session.commit()
-
-    return jsonify({
-        "Message": "Like removed successfully"
-    }), 200
+            "Message": "Internal Server Error"
+        }), 500
 
 
 if __name__ == '__main__':
+    logging.basicConfig(level=logging.DEBUG)
     with app.app_context():
         db.create_all()
-    app.run(port=5004)
+    app.run(port=5004, debug=True)
