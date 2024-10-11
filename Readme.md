@@ -20,7 +20,7 @@ Start the services:
     python like_service.py
 * Feed Service:
     python feed_service.py
-
+### The code launch is registered in App.md
 ## Notes
 * Make your PostgreSQL database running and with all set up configs. 
 * Also JWT secret key should be in saved in secure manner
