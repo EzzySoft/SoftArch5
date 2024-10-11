@@ -10,6 +10,8 @@ A microservices-based application that has a registration by username and allow 
 - User can react on message.
 - Separate services for users, messages, and likes.
 
+### The code launch is registered in App.md
+
 ## Usage
 Start the services:
 * User Service:
