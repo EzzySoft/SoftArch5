@@ -13,16 +13,14 @@ A microservices-based application that has a registration by username and allow 
 ### The code launch is registered in App.md
 
 ## Usage
-Start the services:
-* User Service:
-    python user_service.py
-* Message Service:
-    python message_service.py
-* Like Service:
-    python like_service.py
-* Feed Service:
-    python feed_service.py
+Use docker-compose.yml to start the work.
+Dockers for the Services are located in their directories, for database is located in the root project directory with the script
+```bash
+docker compose build
+docker compose up 
+```
 ### The code launch is registered in App.md
 ## Notes
 * Make your PostgreSQL database running and with all set up configs. 
 * Also JWT secret key should be in saved in secure manner
+

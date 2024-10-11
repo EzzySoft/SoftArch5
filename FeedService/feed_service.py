@@ -36,7 +36,7 @@ def get_feed():
             'Authorization': f'Bearer {token}'
         }
 
-        response = requests.get('http://localhost:5003/messages', headers=headers)
+        response = requests.get('http://message_service:5003/messages', headers=headers)
         if response.status_code != 200:
             logging.error(f"Failed to fetch messages from message_service: {response.status_code} {response.text}")
             return jsonify({
@@ -46,7 +46,7 @@ def get_feed():
         messages = response.json()
         feed = []
 
-        response = requests.get(f'http://localhost:5002/likes/user/{current_user_id}')
+        response = requests.get(f'http://like_service:5002/likes/user/{current_user_id}')
         if response.status_code != 200:
             logging.error(f"Failed to fetch user likes from like_service: {response.status_code} {response.text}")
             return jsonify({
@@ -56,7 +56,8 @@ def get_feed():
         user_likes = response.json().get('liked_message_ids', [])
 
         for msg in messages:
-            response = requests.get(f'http://localhost:5002/likes/{msg["id"]}')
+            response = requests.get(f'http://like_service:5002/likes/{msg["id"]}')
+            response = requests.get(f'http://like_service:5002/likes/{msg["id"]}')
             if response.status_code != 200:
                 logging.error(f"Failed to fetch likes for message from like_service: {response.status_code} {response.text}")
                 return jsonify({
@@ -94,7 +95,7 @@ def like():
                 "Message": "Message ID is required"
             }), 400
 
-        response = requests.post(f'http://localhost:5002/like', json={'message_id': message_id})
+        response = requests.post(f'http://like_service:5002/like', json={'message_id': message_id})
         if response.status_code != 201:
             logging.error(f"Failed to add like: {response.status_code} {response.text}")
             return jsonify({
@@ -123,7 +124,7 @@ def unlike():
                 "Message": "Message ID is required"
             }), 400
 
-        response = requests.post(f'http://localhost:5002/dislike', json={'message_id': message_id})
+        response = requests.post(f'http://like_service:5002/dislike', json={'message_id': message_id})
         if response.status_code != 200:
             logging.error(f"Failed to remove like: {response.status_code} {response.text}")
             return jsonify({
@@ -143,4 +144,4 @@ def unlike():
 if __name__ == '__main__':
     with app.app_context():
         db.create_all()
-    app.run(host = '0.0.0.0', port=5004, debug=True)
+    app.run(host ='0.0.0.0', port=5004, debug=True)
